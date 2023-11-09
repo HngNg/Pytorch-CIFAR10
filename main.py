@@ -88,6 +88,8 @@ optimizer = optim.SGD(net.parameters(), lr=args.lr,
                       momentum=0.9, weight_decay=5e-4)
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
+# List of accuracy
+acces = []
 
 # Training
 def train(epoch):
@@ -111,6 +113,7 @@ def train(epoch):
 
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                      % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
+        acces.append(100.*correct/total)
 
 
 def test(epoch):
@@ -152,3 +155,8 @@ for epoch in range(start_epoch, start_epoch+100):
     train(epoch)
     test(epoch)
     scheduler.step()
+
+file = ('Semantic-Learning-Security-Awareness/semantic_extraction/CIFAR/MLP_sem_CIFAR/acc_semantic_combining_%.2f_lambda_%.2f.csv' % (
+            compression_rate, lambda1))
+data = pd.DataFrame(acces)
+data.to_csv(file, index=False)
