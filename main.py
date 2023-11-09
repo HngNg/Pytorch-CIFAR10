@@ -156,7 +156,6 @@ for epoch in range(start_epoch, start_epoch+100):
     test(epoch)
     scheduler.step()
 
-file = ('Semantic-Learning-Security-Awareness/semantic_extraction/CIFAR/MLP_sem_CIFAR/acc_semantic_combining_%.2f_lambda_%.2f.csv' % (
-            compression_rate, lambda1))
+file = ('Pytorch-CIFAR10/results/acc_DenseNet121.csv')
 data = pd.DataFrame(acces)
 data.to_csv(file, index=False)
