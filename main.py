@@ -151,7 +151,7 @@ def test(epoch):
             os.mkdir('checkpoint')
         torch.save(state, './checkpoint/ckpt.pth')
         best_acc = acc
-        acces.append(100.*correct/total)
+    acces.append(best_acc)
 
 
 for epoch in range(start_epoch, start_epoch+100):
