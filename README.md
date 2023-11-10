@@ -10,7 +10,7 @@ Experiments of different models written in [PyTorch](http://pytorch.org/) on the
 # Start training with: 
 python main.py
 
-# Resume training process wtih: 
+# Resume training process with: 
 python main.py --resume --lr=0.01
 ```
 
@@ -32,5 +32,5 @@ python main.py --resume --lr=0.01
 | [DPN92](https://arxiv.org/abs/1707.01629)             | 95.16%      |
 | [DLA](https://arxiv.org/pdf/1707.06484.pdf)           | 95.47%      |
 
-## References
+## Inspirations
 [Train CIFAR10 with PyTorch](https://github.com/kuangliu/pytorch-cifar/tree/master)
