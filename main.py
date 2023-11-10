@@ -8,6 +8,8 @@ import torch.backends.cudnn as cudnn
 import torchvision
 import torchvision.transforms as transforms
 
+import pandas as pd
+
 import os
 import argparse
 
@@ -113,7 +115,7 @@ def train(epoch):
 
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                      % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
-        acces.append(100.*correct/total)
+        # acces.append(100.*correct/total)
 
 
 def test(epoch):
@@ -149,6 +151,7 @@ def test(epoch):
             os.mkdir('checkpoint')
         torch.save(state, './checkpoint/ckpt.pth')
         best_acc = acc
+        acces.append(100.*correct/total)
 
 
 for epoch in range(start_epoch, start_epoch+100):
