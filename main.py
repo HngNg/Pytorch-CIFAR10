@@ -16,6 +16,19 @@ import argparse
 from models import *
 from utils import progress_bar
 
+import wandb
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="DenseNet121_CIFAR10",
+    
+    # track hyperparameters and run metadata
+    config={
+    "learning_rate": 0.1,
+    "architecture": "CNN",
+    "dataset": "CIFAR-10",
+    "epochs": 100,
+    }
+)
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -116,6 +129,8 @@ def train(epoch):
         progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
                      % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
         # acces.append(100.*correct/total)
+    
+    wandb.log({"acc": correct/total, "loss": train_loss/(batch_idx+1)})
 
 
 def test(epoch):
@@ -157,8 +172,15 @@ def test(epoch):
 for epoch in range(start_epoch, start_epoch+100):
     train(epoch)
     test(epoch)
+    
     scheduler.step()
+
+# Finish the wandb run, necessary in notebooks
+wandb.finish()
 
 file = ('Pytorch-CIFAR10/results/acc_DenseNet121.csv')
 data = pd.DataFrame(acces)
 data.to_csv(file, index=False)
+
+
+    
