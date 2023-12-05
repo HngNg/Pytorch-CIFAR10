@@ -186,7 +186,7 @@ def test(epoch):
 
 for snr in snr_values:
     for epoch in range(start_epoch, start_epoch+100):
-        train(epoch)
+        train(epoch, snr)
         test(epoch)
         
         scheduler.step()
