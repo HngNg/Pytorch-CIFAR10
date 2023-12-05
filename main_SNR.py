@@ -113,7 +113,7 @@ snr_values = [-5, 0, 5, 10, 15, 20]
 
 # Training
 def train(epoch, snr):
-    print('\nEpoch: %d, SNR: %d' % epoch, snr)
+    print('\nEpoch: %d, SNR: %d' % (epoch, snr))
     net.train()
     train_loss = 0
     correct = 0
