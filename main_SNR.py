@@ -108,8 +108,8 @@ scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 acces = []
 
 # List of SNR
-snr_values = [-5, 0, 5, 10, 15, 20]
-
+# snr_values = [-5, 0, 5, 10, 15, 20]
+snr_values = [-5, 0, 5]
 
 # Training
 def train(epoch, snr):
