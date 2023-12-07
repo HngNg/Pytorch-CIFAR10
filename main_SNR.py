@@ -109,7 +109,8 @@ acces = []
 
 # List of SNR
 # snr_values = [-5, 0, 5, 10, 15, 20]
-snr_values = [-5, 0, 5]
+# snr_values = [-5, 0, 5]
+snr_values = [10, 15, 20]
 
 # Training
 def train(epoch, snr):
