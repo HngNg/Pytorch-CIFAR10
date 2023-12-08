@@ -144,7 +144,7 @@ def train(epoch, snr):
     
     # wandb.log({"acc": correct/total, "loss": train_loss/(batch_idx+1)})
 
-def add_exponential_noise(images, snr):
+def add_noise(images, snr):
     noise_std = torch.std(images) / (10 ** (snr / 20))
     uniform_noise = torch.rand_like(images)
     exponential_noise = -torch.log(1 - uniform_noise) / noise_std
