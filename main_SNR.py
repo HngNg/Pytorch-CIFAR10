@@ -149,9 +149,9 @@ def add_noise(images, snr):
     uniform_noise = torch.rand_like(images)
     exponential_noise = -torch.log(1 - uniform_noise) / noise_std
     #Use for Bob
-    noise_factor = 1 
+    # noise_factor = 1 
     #Use for Eve
-    # noise_factor = 100 
+    noise_factor = 100 
     noise = exponential_noise * noise_std * noise_factor
     noisy_images = images + noise
     return noisy_images
