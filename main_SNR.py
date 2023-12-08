@@ -147,11 +147,11 @@ def train(epoch, snr):
 def add_noise(images, snr):
     noise_std = torch.std(images) / (10 ** (snr / 20))
     uniform_noise = torch.rand_like(images)
-    #Use for Bob
+    # Use for Bob
     # noise_factor = 1 
     # exponential_noise = 1
 
-    #Use for Eve
+    # Use for Eve
     noise_factor = 100 
     exponential_noise = -torch.log(1 - uniform_noise) / noise_std
     
