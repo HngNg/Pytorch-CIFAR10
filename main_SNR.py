@@ -109,8 +109,8 @@ acces = []
 
 # List of SNR
 # snr_values = [-5, 0, 5, 10, 15, 20]
-# snr_values = [-5, 0, 5]
-snr_values = [10, 15, 20]
+snr_values = [-5, 0, 5]
+# snr_values = [10, 15, 20]
 
 # Training
 def train(epoch, snr):
@@ -192,9 +192,11 @@ for snr in snr_values:
         
         scheduler.step()
 
+    file = ('Pytorch-CIFAR10/results/acc_DenseNet121_SNR'+str(snr)+'.csv')
+    data = pd.DataFrame(acces)
+    data.to_csv(file, index=False)
+
 # # Finish the wandb run, necessary in notebooks
 # wandb.finish()
 
-file = ('Pytorch-CIFAR10/results/acc_DenseNet121.csv')
-data = pd.DataFrame(acces)
-data.to_csv(file, index=False)
+
