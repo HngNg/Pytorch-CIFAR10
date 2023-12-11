@@ -109,8 +109,8 @@ acces = []
 
 # List of SNR
 # snr_values = [-5, 0, 5, 10, 15, 20]
-snr_values = [-5, 0, 5]
-# snr_values = [10, 15, 20]
+# snr_values = [-5, 0, 5]
+snr_values = [10, 15, 20]
 
 # Training
 def train(epoch, snr):
@@ -148,12 +148,12 @@ def add_noise(images, snr):
     noise_std = torch.std(images) / (10 ** (snr / 20))
     uniform_noise = torch.rand_like(images)
     # Use for Bob
-    # noise_factor = 1 
-    # exponential_noise = 1
+    noise_factor = 1 
+    exponential_noise = 1
 
     # Use for Eve
-    noise_factor = 100 
-    exponential_noise = -torch.log(1 - uniform_noise) / noise_std
+    # noise_factor = 100 
+    # exponential_noise = -torch.log(1 - uniform_noise) / noise_std
     
     noise = exponential_noise * noise_std * noise_factor
     noisy_images = images + noise
