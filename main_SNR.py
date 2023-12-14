@@ -72,12 +72,12 @@ def add_noise(images, snr):
     noise_std = torch.std(images) / (10 ** (snr / 20))
     uniform_noise = torch.rand_like(images)
     # Use for Bob
-    noise_factor = 1 
-    exponential_noise = 1
+    # noise_factor = 1 
+    # exponential_noise = 1
 
     # Use for Eve
-    # noise_factor = 100 
-    # exponential_noise = -torch.log(1 - uniform_noise) / noise_std
+    noise_factor = 100 
+    exponential_noise = -torch.log(1 - uniform_noise) / noise_std
     
     noise = exponential_noise * noise_std * noise_factor
     noisy_images = images + noise
@@ -197,8 +197,8 @@ for snr in snr_values:
         
         scheduler.step()
 
-    file = ('Pytorch-CIFAR10/results/acc_DenseNet121_SNR'+str(snr)+'.csv')
-    # file = ('Pytorch-CIFAR10/results/Eve_acc_DenseNet121_SNR'+str(snr)+'.csv')
+    # file = ('Pytorch-CIFAR10/results/acc_DenseNet121_SNR'+str(snr)+'.csv')
+    file = ('Pytorch-CIFAR10/results/Eve_acc_DenseNet121_SNR'+str(snr)+'.csv')
     data = pd.DataFrame(acces)
     data.to_csv(file, index=False)
 
