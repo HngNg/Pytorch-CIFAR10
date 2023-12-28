@@ -214,7 +214,7 @@ for person in people:
         ssimes = []
 
         for epoch in range(start_epoch, start_epoch+100):
-            train(epoch, snr)
+            train(epoch, snr, person)
             test(epoch)
             
             scheduler.step()
