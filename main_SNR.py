@@ -107,9 +107,9 @@ def test(epoch):
             for i in range(inputs.size(0)):
                 img_gt = inputs[i].cpu().numpy()  # Assuming input images are in the range [0, 1]
                 img_pred = outputs[i].argmax(dim=0).cpu().numpy()
-
+                img_gt_resized = resize_image(img_gt, img_pred.shape)
                 # SSIM calculation
-                ssim_value, _ = ssim(img_gt, img_pred, full=True)
+                ssim_value, _ = ssim(img_gt_resized, img_pred, full=True)
                 ssim_sum += ssim_value
                 count_ssim += 1
 
