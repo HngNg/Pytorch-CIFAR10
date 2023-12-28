@@ -13,6 +13,8 @@ import argparse
 from models import *
 from utils import progress_bar
 from skimage.metrics import structural_similarity as ssim
+from torchvision.utils import save_image
+from torchvision.transforms.functional import to_pil_image, to_tensor
 
 # import wandb
 # wandb.init(
@@ -135,6 +137,12 @@ def test(epoch):
         best_acc = acc
     acces.append(best_acc)
     ssimes.append(avg_ssim)
+
+def resize_image(img, size):
+    img_pil = to_pil_image(img)
+    img_resized = img_pil.resize(size)
+    return to_tensor(img_resized)
+
 # List of SNR
 # snr_values = [-5, 0, 5, 10, 15, 20]
 # snr_values = [-5, 0, 5]
