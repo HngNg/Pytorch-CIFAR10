@@ -15,6 +15,7 @@ from utils import progress_bar
 from skimage.metrics import structural_similarity as ssim
 from torchvision.utils import save_image
 from torchvision.transforms.functional import to_pil_image, to_tensor
+from PIL import Image
 
 # import wandb
 # wandb.init(
@@ -138,8 +139,14 @@ def test(epoch):
     acces.append(best_acc)
     ssimes.append(avg_ssim)
 
+def to_pil_image_32_channels(img):
+    # Assuming img is a PyTorch tensor
+    img_list = [to_pil_image(img_channel) for img_channel in img]
+    img_merged = Image.merge('RGB', img_list)
+    return img_merged
+
 def resize_image(img, size):
-    img_pil = to_pil_image(img)
+    img_pil = to_pil_image_32_channels(img)
     img_resized = img_pil.resize(size)
     return to_tensor(img_resized)
 
