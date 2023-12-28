@@ -28,12 +28,12 @@ for file_name in cifar_csv:
 
         label_prefix = 'Eve' if 'Eve' in file_name else 'Bob'
         print (len(train_acc_densenet))
-        plt.plot(epochs, train_acc_densenet, label=f'{label_prefix} - Accuracy, SNR {snr}', marker='o')
+        plt.plot(epochs, train_acc_densenet, label=f'{label_prefix} - Accuracy, SNR {snr}', marker='.')
     eve+=1
 # Add labels and a legend
 plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
-plt.title('Model Accuracy Over Epochs')
+plt.title('Model Accuracy Over Epochs - CIFAR10')
 plt.legend()
 
 # Display the plot
