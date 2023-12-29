@@ -14,12 +14,10 @@ from utils import progress_bar
 from torchvision.utils import save_image
 from torchvision.transforms.functional import to_pil_image, to_tensor
 from PIL import Image
-from torch.autograd import Variable
-from torch.utils.data import DataLoader
-import pytorch_ssim
-from pytorch_ssim import ssim
-import pandas as pd
 import torch.backends.cudnn as cudnn
+from torch.autograd import Variable
+import pytorch_msssim
+from pytorch_msssim import ssim
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -80,39 +78,45 @@ def test(epoch):
     test_loss = 0
     correct = 0
     total = 0
+    ssim_value = 0  # Variable to store cumulative SSIM
 
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(testloader):
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = net(inputs)
+            
+            # Calculate SSIM
+            # Note: Adjust the dimensions based on your specific use case
+            ssim_batch = ssim(outputs, inputs, data_range=1, size_average=False)
+            ssim_value += ssim_batch.sum().item()
+            
             loss = criterion(outputs, targets) 
-            # for i in range (input.size(0)):
-            #     img1
-            # ssim_value = ssim(inputs, img2).data[0]
-
+            
             test_loss += loss.item()
             _, predicted = outputs.max(1)
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
-            if batch_idx == 0:
-                print("Example Input Tensor:")
-                print(inputs[0])
-            if inputs.size() != outputs.size():
-                print(f"Warning: Dimensions of inputs {inputs.size()} and outputs {outputs.size()} do not match!")
+            # if batch_idx == 0:
+            #     print("Example Input Tensor:")
+            #     print(inputs[0])
+            # if inputs.size() != outputs.size():
+            #     print(f"Warning: Dimensions of inputs {inputs.size()} and outputs {outputs.size()} do not match!")
 
 
-            progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-                         % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total))
+            progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d) | SSIM: %.3f'
+                         % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total), 100. * ssim_value / total)
 
     # Save checkpoint.
     acc = 100.*correct/total
+    average_ssim = ssim_value / total
 
     if acc > best_acc:
         print('Saving..')
         state = {
             'net': net.state_dict(),
             'acc': acc,
+            'ssim': average_ssim,  # Add SSIM to the saved state
             'epoch': epoch,
         }
         if not os.path.isdir('checkpoint'):
@@ -120,6 +124,8 @@ def test(epoch):
         torch.save(state, './checkpoint/ckpt.pth')
         best_acc = acc
     acces.append(best_acc)
+    ssim_values.append(average_ssim)  # You can store SSIM values for further analysis
+
 
 best_acc = 0  # best test accuracy
 start_epoch = 0  # start from epoch 0 or last checkpoint epoch
@@ -174,7 +180,7 @@ scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 
 # List of accuracy
 acces = []
-ssimes = []
+ssim_values = []
 
 for epoch in range(start_epoch, start_epoch+1):
     train(epoch, snr, person)
@@ -189,5 +195,5 @@ if (person == "Eve"):
     file_ssim = ('Pytorch-CIFAR10/results/Eve_ssim_DenseNet121_SNR'+str(snr)+'.csv')
 data = pd.DataFrame(acces)
 data.to_csv(file, index=False)
-# data_ssim = pd.DataFrame(ssimes)
-# data_ssim.to_csv(file_ssim, index=False)
+data_ssim = pd.DataFrame(ssim_values)
+data_ssim.to_csv(file_ssim, index=False)
