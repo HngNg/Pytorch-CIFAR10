@@ -116,7 +116,8 @@ def test(epoch):
             # Calculate SSIM
             for i in range(inputs.size(0)):
                 img1 = inputs[i].cpu().numpy().transpose((1, 2, 0))  # Assuming your input images are in channel-first format
-                img2 = outputs[i].cpu().numpy().transpose((1, 2, 0))  # Assuming your output images are in channel-first format
+                img2 = outputs[i].cpu().numpy().transpose((1, 2, 0))  if outputs[i].shape[0] == 3 else outputs[i].cpu().numpy().squeeze()
+
 
                 img1 = img1.squeeze() if img1.shape[2] == 1 else img1
                 img2 = img2.squeeze() if img2.shape[2] == 1 else img2
