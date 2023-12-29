@@ -16,6 +16,12 @@ from skimage.metrics import structural_similarity as ssim
 from torchvision.utils import save_image
 from torchvision.transforms.functional import to_pil_image, to_tensor
 from PIL import Image
+import pytorch_ssim
+from torch.autograd import Variable
+from torch.utils.data import DataLoader
+from pytorch_ssim import ssim
+import pandas as pd
+import torch.backends.cudnn as cudnn
 
 # import wandb
 # wandb.init(
@@ -92,13 +98,14 @@ def test(epoch):
     test_loss = 0
     correct = 0
     total = 0
-    ssim_sum = 0 # Sum of SSIM values
-    count_ssim = 0 # Count of images for which SSIM is calculated
+    count_ssim = 0  # Count of images for which SSIM is calculated
+
+    ssim_sum = 0  # Sum of SSIM values
 
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(testloader):
             inputs, targets = inputs.to(device), targets.to(device)
-            outputs = net(inputs) # focus on this to get SSIM 
+            outputs = net(inputs)
             loss = criterion(outputs, targets)
 
             test_loss += loss.item()
@@ -106,19 +113,21 @@ def test(epoch):
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
-            # Calculate SSIM for each image in the batch
+            # Calculate SSIM
             for i in range(inputs.size(0)):
-                img_gt = inputs[i].cpu().numpy()  # Assuming input images are in the range [0, 1]
-                img_pred = outputs[i].argmax(dim=0).cpu().numpy()
-                img_gt_resized = resize_image(img_gt, img_pred.shape)
-                # SSIM calculation
-                ssim_value, _ = ssim(img_gt_resized, img_pred, full=True)
-                ssim_sum += ssim_value
+                img1 = inputs[i].cpu().numpy().transpose((1, 2, 0))  # Assuming your input images are in channel-first format
+                img2 = outputs[i].cpu().numpy().transpose((1, 2, 0))  # Assuming your output images are in channel-first format
+
+                img1 = img1.squeeze() if img1.shape[2] == 1 else img1
+                img2 = img2.squeeze() if img2.shape[2] == 1 else img2
+
+                ssim_value = ssim(torch.from_numpy(img1).unsqueeze(0).unsqueeze(0).float().to(device),
+                                  torch.from_numpy(img2).unsqueeze(0).unsqueeze(0).float().to(device))
+                ssim_sum += ssim_value.item()
                 count_ssim += 1
 
-            progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d) | SSIM: %.3f'
-                         % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total, ssim_sum/total))
-
+            progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+                         % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total))
 
     # Save checkpoint.
     acc = 100.*correct/total
@@ -138,17 +147,6 @@ def test(epoch):
         best_acc = acc
     acces.append(best_acc)
     ssimes.append(avg_ssim)
-
-def to_pil_image_32_channels(img):
-    # Assuming img is a PyTorch tensor
-    img_list = [to_pil_image(img_channel) for img_channel in img]
-    img_merged = Image.merge('RGB', img_list)
-    return img_merged
-
-def resize_image(img, size):
-    img_pil = to_pil_image_32_channels(img)
-    img_resized = img_pil.resize(size)
-    return to_tensor(img_resized)
 
 # List of SNR
 # snr_values = [-5, 0, 5, 10, 15, 20]
