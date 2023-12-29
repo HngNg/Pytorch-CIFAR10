@@ -87,7 +87,8 @@ def test(epoch):
             
             # Calculate SSIM
             # Note: Adjust the dimensions based on your specific use case
-            ssim_batch = ssim(outputs, inputs, data_range=1, size_average=False)
+            outputs_reshaped = outputs.view(inputs.size())
+            ssim_batch = ssim(outputs_reshaped, inputs, data_range=1, size_average=False)
             ssim_value += ssim_batch.sum().item()
             
             loss = criterion(outputs, targets) 
