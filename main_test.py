@@ -86,9 +86,9 @@ def test(epoch):
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = net(inputs)
             loss = criterion(outputs, targets) 
-            for i in range (input.size(0)):
-                img1
-            ssim_value = ssim(inputs, img2).data[0]
+            # for i in range (input.size(0)):
+            #     img1
+            # ssim_value = ssim(inputs, img2).data[0]
 
             test_loss += loss.item()
             _, predicted = outputs.max(1)
