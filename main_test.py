@@ -174,7 +174,7 @@ scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 acces = []
 ssimes = []
 
-for epoch in range(start_epoch, start_epoch+100):
+for epoch in range(start_epoch, start_epoch+1):
     train(epoch, snr, person)
     test(epoch)
     
