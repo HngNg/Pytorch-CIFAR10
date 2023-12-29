@@ -98,6 +98,8 @@ def test(epoch):
             if batch_idx == 0:
                 print("Example Input Tensor:")
                 print(inputs[0])
+            if inputs.size() != outputs.size():
+                print(f"Warning: Dimensions of inputs {inputs.size()} and outputs {outputs.size()} do not match!")
 
 
             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
