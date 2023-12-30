@@ -85,11 +85,12 @@ def test(epoch):
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = net(inputs)
             
+            # Convert tensors to images
+            input_images = tensor_to_image(inputs)
+            output_images = tensor_to_image(outputs)
+
             # Calculate SSIM
-            # Note: Adjust the dimensions based on your specific use case
-            expected_shape = (inputs.size(0),) + outputs.size()[1:]
-            outputs_reshaped = outputs.view(*expected_shape)
-            ssim_batch = ssim(outputs_reshaped, inputs, data_range=1, size_average=False)
+            ssim_batch = ssim(input_images, output_images, data_range=1, size_average=False)
             ssim_value += ssim_batch.sum().item()
             
             loss = criterion(outputs, targets) 
@@ -128,6 +129,12 @@ def test(epoch):
     acces.append(best_acc)
     ssim_values.append(average_ssim)  # You can store SSIM values for further analysis
 
+
+def tensor_to_image(tensor):
+    # Assuming tensor is of shape [batch_size, channels, height, width]
+    # Convert the tensor to a PIL Image
+    image = transforms.ToPILImage()(tensor.squeeze())
+    return image
 
 best_acc = 0  # best test accuracy
 start_epoch = 0  # start from epoch 0 or last checkpoint epoch
