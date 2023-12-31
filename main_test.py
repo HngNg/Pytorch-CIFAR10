@@ -191,18 +191,3 @@ scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
 acces = []
 ssim_values = []
 
-for epoch in range(start_epoch, start_epoch+1):
-    train(epoch, snr, person)
-    test(epoch)
-    
-    scheduler.step()
-
-file = ('Pytorch-CIFAR10/results/acc_DenseNet121_SNR'+str(snr)+'.csv')
-file_ssim = ('Pytorch-CIFAR10/results/ssim_DenseNet121_SNR'+str(snr)+'.csv')
-if (person == "Eve"):
-    file = ('Pytorch-CIFAR10/results/Eve_acc_DenseNet121_SNR'+str(snr)+'.csv')
-    file_ssim = ('Pytorch-CIFAR10/results/Eve_ssim_DenseNet121_SNR'+str(snr)+'.csv')
-data = pd.DataFrame(acces)
-data.to_csv(file, index=False)
-data_ssim = pd.DataFrame(ssim_values)
-data_ssim.to_csv(file_ssim, index=False)
