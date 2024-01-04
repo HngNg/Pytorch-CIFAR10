@@ -88,8 +88,12 @@ def test(epoch):
             probabilities = F.softmax(outputs, dim=1)
             reshaped_output = probabilities.view(-1, 3, 32, 32)
             
+            print("Original size:", output.size())
+
             metric = torchmetrics.SSIM(data_range=1.0)
             ssim_score = metric(inputs, reshaped_output)
+
+            print("Reshaped size:", reshaped_output.size())
             
             loss = criterion(outputs, targets) 
             
