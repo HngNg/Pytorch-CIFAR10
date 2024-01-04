@@ -16,8 +16,9 @@ from torchvision.transforms.functional import to_pil_image, to_tensor
 from PIL import Image
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
-import pytorch_msssim
-from pytorch_msssim import ssim
+import torchmetrics
+# import pytorch_msssim
+# from pytorch_msssim import ssim
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
@@ -78,20 +79,17 @@ def test(epoch):
     test_loss = 0
     correct = 0
     total = 0
-    ssim_value = 0  # Variable to store cumulative SSIM
+    ssim_score = 0  # Variable to store cumulative SSIM
 
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(testloader):
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = net(inputs)
+            probabilities = F.softmax(outputs, dim=1)
+            reshaped_output = probabilities.view(-1, 3, 32, 32)
             
-            # Convert tensors to images
-            input_images = tensor_to_image(inputs)
-            output_images = tensor_to_image(outputs)
-
-            # Calculate SSIM
-            ssim_batch = ssim(input_images, output_images, data_range=1, size_average=False)
-            ssim_value += ssim_batch.sum().item()
+            metric = torchmetrics.SSIM(data_range=1.0)
+            ssim_score = metric(inputs, reshaped_output)
             
             loss = criterion(outputs, targets) 
             
@@ -108,18 +106,17 @@ def test(epoch):
 
 
             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d) | SSIM: %.3f'
-                         % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total), 100. * ssim_value / total)
+                         % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total), 100. * ssim_score)
 
     # Save checkpoint.
     acc = 100.*correct/total
-    average_ssim = ssim_value / total
 
     if acc > best_acc:
         print('Saving..')
         state = {
             'net': net.state_dict(),
             'acc': acc,
-            'ssim': average_ssim,  # Add SSIM to the saved state
+            'ssim': ssim_score,  # Add SSIM to the saved state
             'epoch': epoch,
         }
         if not os.path.isdir('checkpoint'):
@@ -127,7 +124,7 @@ def test(epoch):
         torch.save(state, './checkpoint/ckpt.pth')
         best_acc = acc
     acces.append(best_acc)
-    ssim_values.append(average_ssim)  # You can store SSIM values for further analysis
+    ssim_values.append(ssim_score)  # You can store SSIM values for further analysis
 
 
 def tensor_to_image(tensor):
