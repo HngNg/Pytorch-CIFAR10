@@ -85,6 +85,10 @@ def test(epoch):
         for batch_idx, (inputs, targets) in enumerate(testloader):
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = net(inputs)
+
+            print("Inputs size:", inputs.size())
+            print("Outputs size:", outputs.size())
+
             probabilities = F.softmax(outputs, dim=1)
             reshaped_output = probabilities.view(-1, 3, 32, 32)
             
