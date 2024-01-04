@@ -17,6 +17,7 @@ from PIL import Image
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 import torchmetrics
+from skimage import metrics
 # import pytorch_msssim
 # from pytorch_msssim import ssim
 
@@ -86,18 +87,23 @@ def test(epoch):
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = net(inputs)
 
-            print("Inputs size:", inputs.size())
-            print("Outputs size:", outputs.size())
+            output = output.view(100, 3, 32, 32)
+            output = output.detach().cpu()
+            batch_avg_ssim=0
+            for i in range(100):
+                org=np.transpose(inputs[i], (1, 2, 0)).numpy()
+                denoise=np.transpose(output[i], (1, 2, 0)).numpy()
+                batch_avg_ssim+=metrics.structural_similarity(org,denoise,multichannel=True)
+            ssim_score += batch_avg_ssim
 
-            probabilities = F.softmax(outputs, dim=1)
-            print("prob size:", probabilities.size())
-            reshaped_output = probabilities.view(-1, 3, 32, 32)
-
-
-            metric = torchmetrics.SSIM(data_range=1.0)
-            ssim_score = metric(inputs, reshaped_output)
-
-            print("Reshaped size:", reshaped_output.size())
+            # print("Inputs size:", inputs.size())
+            # print("Outputs size:", outputs.size())
+            # probabilities = F.softmax(outputs, dim=1)
+            # print("prob size:", probabilities.size())
+            # reshaped_output = probabilities.view(-1, 3, 32, 32)
+            # metric = torchmetrics.SSIM(data_range=1.0)
+            # ssim_score = metric(inputs, reshaped_output)
+            # print("Reshaped size:", reshaped_output.size())
             
             loss = criterion(outputs, targets) 
             
@@ -114,10 +120,11 @@ def test(epoch):
 
 
             progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d) | SSIM: %.3f'
-                         % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total), 100. * ssim_score)
+                         % (test_loss / (batch_idx + 1), 100. * correct / total, correct, total, 100. * batch_avg_ssim / total))
 
     # Save checkpoint.
     acc = 100.*correct/total
+    avg_ssim = 100.*ssim_score/total
 
     if acc > best_acc:
         print('Saving..')
