@@ -90,9 +90,9 @@ def test(epoch):
             print("Outputs size:", outputs.size())
 
             probabilities = F.softmax(outputs, dim=1)
+            print("prob size:", probabilities.size())
             reshaped_output = probabilities.view(-1, 3, 32, 32)
-            
-            print("Original size:", output.size())
+
 
             metric = torchmetrics.SSIM(data_range=1.0)
             ssim_score = metric(inputs, reshaped_output)
