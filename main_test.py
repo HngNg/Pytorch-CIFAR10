@@ -87,7 +87,7 @@ def test(epoch):
             inputs, targets = inputs.to(device), targets.to(device)
             outputs = net(inputs)
 
-            output = output.view(100, 3, 32, 32)
+            output = outputs.view(100, 3, 32, 32)
             output = output.detach().cpu()
             batch_avg_ssim=0
             for i in range(100):
